@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --surgct-bg-dark: #080d1a;
+  --surgct-surface-dark: #0d172e;
+  --surgct-accent-cyan: #06b6d4;
+}
+
+body {
+  background-color: #080d1a;
+  color: #f1f5f9;
+}
+
+.dcv-root {
+  background-color: #080d1a;
+}
+
+.dcv-root.dark {
+  background-color: #080d1a;
+}
+
+.cornerstone-viewport {
+  width: 100%;
+  height: 100%;
+  background-color: #040711;
+}
+
+/* Custom Surgical Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080d1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0891b2;
+}
+
+/* Glassmorphic Paneling */
+.surgct-glass {
+  background: rgba(13, 23, 46, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(6, 182, 212, 0.18);
+}
+
+.surgct-glass-card {
+  background: linear-gradient(135deg, rgba(13, 23, 46, 0.85) 0%, rgba(8, 13, 26, 0.92) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* AI Diagnostics Scan Pulse Animation */
+@keyframes aiScanPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(6, 182, 212, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(6, 182, 212, 0);
+  }
+}
+
+.ai-scan-beacon {
+  animation: aiScanPulse 2.5s infinite cubic-bezier(0.66, 0, 0, 1);
+}

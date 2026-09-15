@@ -1,0 +1,23 @@
+node_modules
+dist
+.DS_Store
+*.local
+public/sample-data/
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Local DICOM test data (patient data - never commit)
+dicom_test/
+
+# Local reference material / saved third-party pages
+docs/
+demo-dist/
+
+# Playwright
+playwright-report/
+test-results/
+.playwright/

@@ -1,0 +1,164 @@
+/**
+ * Layout configuration for the 1+3 view: pick the arrangement (big-left vs
+ * big-top) and assign a view to each of the four panels. Shown as an icon in
+ * the top bar center, opening a small popup.
+ */
+
+import { useEffect, useRef, useState } from 'react';
+import { useViewer } from '@/context/ViewerContext';
+import { useI18n } from '@/i18n/I18nContext';
+import { VIEW_KEYS, type ViewKey } from '@/types/dicom';
+
+function GridIcon() {
+  return (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="10" height="18" rx="1" strokeWidth={1.6} />
+      <rect x="15" y="3" width="6" height="5.5" rx="1" strokeWidth={1.6} />
+      <rect x="15" y="9.25" width="6" height="5.5" rx="1" strokeWidth={1.6} />
+      <rect x="15" y="15.5" width="6" height="5.5" rx="1" strokeWidth={1.6} />
+    </svg>
+  );
+}
+
+const VIEW_LABEL: Record<ViewKey, string> = {
+  AXIAL: 'view.axial',
+  SAGITTAL: 'view.sagittal',
+  CORONAL: 'view.coronal',
+  '3D': 'view.3d',
+};
+
+export function LayoutConfigButton() {
+  const { state, dispatch } = useViewer();
+  const { t } = useI18n();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    window.addEventListener('mousedown', handler);
+    return () => window.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const { big, small, arrangement, grid, panoArrangement } = state.panel;
+  const isPano = state.layoutMode === 'OPG2+1';
+
+  // Assign a view to a panel slot (0 = big, 1-3 = smalls). To keep the four
+  // panels showing distinct views, if another slot already had that view, it
+  // takes over the edited slot's previous view (a swap).
+  const setSlot = (slot: number, view: ViewKey) => {
+    const panels: ViewKey[] = [big, ...small];
+    const old = panels[slot];
+    if (old === view) return;
+    panels[slot] = view;
+    const dup = panels.findIndex((v, i) => i !== slot && v === view);
+    if (dup >= 0) panels[dup] = old;
+    dispatch({ type: 'SET_PANEL', payload: { big: panels[0], small: [panels[1], panels[2], panels[3]] as [ViewKey, ViewKey, ViewKey] } });
+  };
+
+  const SelectRow = ({ label, value, onChange }: { label: string; value: ViewKey; onChange: (k: ViewKey) => void }) => (
+    <label className="flex items-center justify-between gap-2">
+      <span className="text-xs text-gray-600 dark:text-gray-400">{label}</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value as ViewKey)}
+        className="text-xs rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-slate-200 px-1.5 py-1"
+      >
+        {VIEW_KEYS.map((k) => (
+          <option key={k} value={k}>{t(VIEW_LABEL[k])}</option>
+        ))}
+      </select>
+    </label>
+  );
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        title={t('layout.configure')}
+        className={`h-7 px-1.5 flex items-center rounded-none transition-colors ${
+          open
+            ? 'bg-dental-600 text-white'
+            : 'bg-slate-100/70 text-slate-600 hover:bg-slate-200 dark:bg-slate-800/70 dark:text-slate-300 dark:hover:bg-slate-700'
+        }`}
+      >
+        <GridIcon />
+      </button>
+      {open && (
+        <div className="absolute left-1/2 -translate-x-1/2 top-9 z-50 w-56 bg-white/95 border border-slate-200 rounded-none shadow-xl p-3 space-y-3 dark:bg-slate-800/95 dark:border-slate-700 backdrop-blur-sm">
+          {isPano ? (
+            <div className="space-y-1">
+              <span className="block text-[11px] font-semibold text-gray-500 dark:text-gray-400">{t('layout.arrangement')}</span>
+              <div className="flex gap-1">
+                {(['top', 'left'] as const).map((a) => (
+                  <button
+                    key={a}
+                    onClick={() => dispatch({ type: 'SET_PANEL', payload: { panoArrangement: a } })}
+                    className={`flex-1 px-2 py-1 text-xs rounded-none transition-colors ${
+                      panoArrangement === a
+                        ? 'bg-dental-600 text-white'
+                        : 'bg-slate-100/70 text-slate-600 hover:bg-slate-200 dark:bg-slate-800/70 dark:text-slate-300 dark:hover:bg-slate-700'
+                    }`}
+                  >
+                    {t(a === 'top' ? 'layout.arrangeTop' : 'layout.arrangeLeft')}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-1">
+                <span className="block text-[11px] font-semibold text-gray-500 dark:text-gray-400">{t('layout.grid')}</span>
+                <div className="flex gap-1">
+                  {(['1+3', '2x2'] as const).map((g) => (
+                    <button
+                      key={g}
+                      onClick={() => dispatch({ type: 'SET_PANEL', payload: { grid: g } })}
+                      className={`flex-1 px-2 py-1 text-xs rounded-none font-mono transition-colors ${
+                        grid === g
+                          ? 'bg-dental-600 text-white'
+                          : 'bg-slate-100/70 text-slate-600 hover:bg-slate-200 dark:bg-slate-800/70 dark:text-slate-300 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      {g === '1+3' ? '1+3' : '2×2'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {grid === '1+3' && (
+                <div className="space-y-1">
+                  <span className="block text-[11px] font-semibold text-gray-500 dark:text-gray-400">{t('layout.arrangement')}</span>
+                  <div className="flex gap-1">
+                    {(['left', 'top'] as const).map((a) => (
+                      <button
+                        key={a}
+                        onClick={() => dispatch({ type: 'SET_PANEL', payload: { arrangement: a } })}
+                        className={`flex-1 px-2 py-1 text-xs rounded-none transition-colors ${
+                          arrangement === a
+                            ? 'bg-dental-600 text-white'
+                            : 'bg-slate-100/70 text-slate-600 hover:bg-slate-200 dark:bg-slate-800/70 dark:text-slate-300 dark:hover:bg-slate-700'
+                        }`}
+                      >
+                        {t(a === 'left' ? 'layout.arrangeLeft' : 'layout.arrangeTop')}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <SelectRow label={t('layout.big')} value={big} onChange={(k) => setSlot(0, k)} />
+                <SelectRow label={`${t('layout.small')} 1`} value={small[0]} onChange={(k) => setSlot(1, k)} />
+                <SelectRow label={`${t('layout.small')} 2`} value={small[1]} onChange={(k) => setSlot(2, k)} />
+                <SelectRow label={`${t('layout.small')} 3`} value={small[2]} onChange={(k) => setSlot(3, k)} />
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
