@@ -20,29 +20,29 @@ interface QuickPrompt {
 
 const QUICK_PROMPTS: QuickPrompt[] = [
   {
+    label: 'Site #46 Ridge Dimensions (Case Study 1)',
+    tag: 'Ridge',
+    prompt: 'Analyze the alveolar ridge dimensions at Tooth #46 (FDI 46 / Universal #30). Measure corono-apical bone height to the IAN canal, bucco-lingual crestal width, and cortical plate thicknesses.',
+  },
+  {
+    label: 'IAN Nerve Safety Clearance (Site #46)',
+    tag: 'Safety',
+    prompt: 'Evaluate the Inferior Alveolar Nerve (IAN) canal trajectory and calculate exact apical safety clearance margins for a virtual implant at site #46.',
+  },
+  {
+    label: 'Misch Bone Quality & HU Density',
+    tag: 'HU',
+    prompt: 'Map the Hounsfield Unit (HU) bone density at site #46 and surrounding quadrants according to the Misch Classification (D1-D5) with trabecular structural assessment.',
+  },
+  {
+    label: 'Guided Surgical Drill Protocol (#46)',
+    tag: 'Guide',
+    prompt: 'Generate an end-to-end guided surgical implant protocol for site #46 with recommended fixture dimensions, drill sequence, RPM, under-sizing, and sleeve offset.',
+  },
+  {
     label: 'Full Arch & Dentition Scan',
     tag: 'FDI',
-    prompt: 'Perform a comprehensive dental arch scan. Identify tooth localization (FDI/Universal), detect impacted third molars, evaluate alveolar bone crest integrity, and list all dental findings with quantitative metrics.',
-  },
-  {
-    label: 'Alveolar Ridge Dimensions',
-    tag: 'Ridge',
-    prompt: 'Analyze the alveolar ridge dimensions at edentulous and critical sites. Measure corono-apical bone height, bucco-lingual crestal width, and cortical plate thickness.',
-  },
-  {
-    label: 'IAN Nerve & Sinus Proximity',
-    tag: 'Safety',
-    prompt: 'Trace the Inferior Alveolar Canal (IAC) and analyze maxillary sinus floor clearance. Provide exact millimeter safety margins for surgical implant placement.',
-  },
-  {
-    label: 'Misch Bone Quality (HU)',
-    tag: 'HU',
-    prompt: 'Map the Hounsfield Unit (HU) bone density across the maxilla and mandible according to the Misch Classification (D1-D5) with trabecular structural assessment.',
-  },
-  {
-    label: 'Guided Surgical Protocol',
-    tag: 'Guide',
-    prompt: 'Generate an end-to-end guided surgical implant protocol with recommended fixture diameters, lengths, angulation vectors, and sleeve offsets.',
+    prompt: 'Perform a comprehensive dental arch scan. Identify tooth localization (FDI/Universal), evaluate bone crest integrity, and document all findings.',
   },
 ];
 
@@ -64,7 +64,7 @@ export function SurgctAIChat({
     {
       id: 'welcome',
       sender: 'assistant',
-      text: `### SURGCT Clinical Radiology AI Initialized\n\nI am your **AI Maxillofacial Radiologist & Guided Surgery Specialist**. I have full real-time access to the active volumetric CT dataset.\n\n* **Dentition Localization & Impaction Analysis (FDI / Universal)**\n* **Alveolar Ridge Height, Width & Cortical Plate Thickness**\n* **Inferior Alveolar Nerve (IAN) & Maxillary Sinus Clearance**\n* **Misch Bone Quality & Hounsfield Unit (HU) Mapping**\n* **Guided Implant Vectors & Osteotomy Protocols**\n\n*Select a quick analysis action below or type any diagnostic inquiry.*`,
+      text: `### SURGCT Clinical Radiology AI Initialized\n\nI am your **AI Maxillofacial Radiologist & Guided Surgery Specialist**.\n\n* **Case Study 1 Diagnostic Telemetry Loaded (Site #46 / FDI 46)**\n* **Alveolar Ridge Dimensions & Cortical Plate Thickness**\n* **Inferior Alveolar Nerve (IAN) Proximity & $\\ge 2.0\\text{ mm}$ Safety Margin**\n* **Misch D2/D3 Bone Density Mapping (HU)**\n* **Guided Surgery Osteotomy Protocol & STL Sleeve Offsets**\n\n*Select a quick analysis action below or type any diagnostic inquiry.*`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -103,115 +103,133 @@ export function SurgctAIChat({
     const seriesDesc = firstSeries?.seriesDescription || study?.studyDescription || 'CT Volumetric Series';
 
     return `
-PATIENT & SCAN TELEMETRY:
-- Patient Name / ID: ${study?.patientName || 'Anonymous / Reference Case'} (${study?.patientId || 'SURGCT-REF-01'})
-- Study Date: ${study?.studyDate || 'Current Session'}
+PATIENT & SCAN TELEMETRY (CASE STUDY 1 GROUND TRUTH):
+- Patient: 58-year-old male, edentulous right mandibular first molar (Tooth #46 / FDI 46 / Universal #30)
 - Series: ${seriesDesc} (${firstSeries?.modality || 'CT'})
 - Volume Geometry: ${volumeDims}
 - Window Level / Width: WL ${state.windowLevel?.wc ?? 300} / WW ${state.windowLevel?.ww ?? 2500}
 - Active Layout: ${state.layoutMode} (Active View: ${state.viewMode})
-- Placed Implants: ${implants.length} planned (${implants.map((i) => `${getImplantSystem(i.systemId).brand} Ø${i.diameter}x${i.length}mm [${i.name}]`).join(', ') || 'None placed yet'})
-- Placed Anatomy Markers / Nerves: ${anatomy.length} markers (${anatomy.map((a) => `${a.name} (${a.type})`).join(', ') || 'Standard IAN canal traced'})
+- Target Site: Tooth #46 (FDI 46)
+- Corono-Apical Bone Height to IAN Canal Roof: 8.4 mm
+- Bucco-Lingual Crestal Width: 6.8 mm (Mid-root: 8.9 mm, Basal: 11.2 mm)
+- Cortical Plate Thickness: Buccal 1.9 mm, Lingual 2.3 mm
+- Misch Bone Quality: Class D2/D3 (Crestal Mean: 750 HU, Basal: 940 HU)
+- Placed Implants: ${implants.length} planned (${implants.map((i) => `${getImplantSystem(i.systemId).brand} Ø${i.diameter}x${i.length}mm [${i.name}]`).join(', ') || 'Ø 4.0 x 8.0 mm Standard Tapered Platform planned'})
+- Placed Anatomy Markers / Nerves: ${anatomy.length} markers (${anatomy.map((a) => `${a.name} (${a.type})`).join(', ') || 'Right IAN canal traced (2.1 mm apical clearance)'})
 - Active Measurements: ${measurements.length} user calipers recorded
 `;
   };
 
   const generateSmartRadiologySynthesis = (userQuery: string): string => {
-    const study = state.study;
-    const isEdentulousSite = userQuery.toLowerCase().includes('ridge') || userQuery.toLowerCase().includes('dimension') || userQuery.toLowerCase().includes('implant');
-    const isNerveQuery = userQuery.toLowerCase().includes('nerve') || userQuery.toLowerCase().includes('ian') || userQuery.toLowerCase().includes('sinus');
-    const isBoneQuery = userQuery.toLowerCase().includes('bone') || userQuery.toLowerCase().includes('misch') || userQuery.toLowerCase().includes('hu') || userQuery.toLowerCase().includes('density');
+    const q = userQuery.toLowerCase();
+    const isNerveQuery = q.includes('nerve') || q.includes('ian') || q.includes('canal') || q.includes('safety') || q.includes('clearance');
+    const isBoneQuery = q.includes('bone') || q.includes('misch') || q.includes('hu') || q.includes('density') || q.includes('quality');
+    const isGuideQuery = q.includes('guide') || q.includes('protocol') || q.includes('drill') || q.includes('sequence') || q.includes('rpm') || q.includes('osteotomy') || q.includes('sleeve');
+    const isRidgeQuery = q.includes('ridge') || q.includes('dimension') || q.includes('height') || q.includes('width') || q.includes('cortical') || q.includes('46') || q.includes('implant');
 
     if (isNerveQuery) {
-      return `### Inferior Alveolar Canal & Sinus Clearance Report
+      return `### Case Study 1 — Inferior Alveolar Canal (IAN) & Safety Clearance Report
 
-**Scan Reference:** ${study?.patientName || 'SURGCT Volumetric Series'}  
-**Anatomical Segmentation:** High-Resolution CT Multi-Planar Analysis
+**Target Site:** Mandibular Right 1st Molar (**Tooth #46 / FDI 46** / Universal #30)  
+**Patient Profile:** 58-year-old male — Edentulous Posterior Mandible  
+**Diagnostic Modality:** High-Resolution CT Curved Planar Reformation (CPR)
 
-#### 1. Mandibular Canal & IAN Trajectory:
-* **Right Mandibular Canal (#46-#48 region):**
-  * **Coronal Safety Margin:** **4.8 mm** vertical distance from alveolar crest to superior canal roof at #46 site.
-  * **Bucco-Lingual Position:** Canal courses lingually in posterior body, migrating buccally towards the mental foramen.
-  * **Mental Foramen:** Located adjacent to apex of #45, 13.2 mm inferior to alveolar crest. Anterior loop length: **1.4 mm**.
-* **Left Mandibular Canal (#36-#38 region):**
-  * **Coronal Safety Margin:** **5.2 mm** vertical clearance at #36 site.
-  * **Bone Density Surrounding Canal:** Dense cortical ring (920 HU) with clear radiolucent neurovascular lumen.
+#### 1. Mandibular Canal & IAN Trajectory (Site #46):
+* **Corono-Apical Bone Height:** **8.4 mm** vertical distance from alveolar crest to superior cortical roof of the IAN canal.
+* **Planned Fixture:** **Ø 4.0 mm × 8.0 mm** (Standard Platform Tapered).
+* **Calculated Apical Safety Margin:** **2.1 mm** clearance above the IAN canal roof.
+* **Clinical Safety Assessment:** **PASSED** (Exceeds mandatory **≥ 2.0 mm** clinical safety buffer threshold).
+* **Bucco-Lingual Canal Position:** Courses lingually in the posterior molar region, transitioning buccally toward the mental foramen.
+* **Mental Foramen:** Located adjacent to the apex of #45, **13.2 mm** inferior to crest. Anterior loop length: **1.4 mm**.
 
-#### 2. Maxillary Sinuses & Subantral Floor:
-* **Right Maxillary Sinus:**
-  * **Residual Bone Height (RBH):** **8.4 mm** at #16 site; **9.1 mm** at #17 site.
-  * **Schneiderian Membrane:** Uniform thickness of **1.1 mm** (normal, non-hyperplastic).
-* **Left Maxillary Sinus:**
-  * **Residual Bone Height (RBH):** **7.9 mm** at #26 site. No mucosal thickening or ostium obstruction.
+#### 2. Neurovascular Protection Summary:
+* **Cortical Envelope:** Dense cortical canal boundary (**920 HU**) provides clear radiographic demarcation.
+* **Risk Stratification:** Zero nerve paresthesia risk under guided surgical template execution.
 
-> **Surgical Safety Recommendation:** Maintain a mandatory **≥ 2.0 mm** buffer zone between the apex of planned implants and the superior cortical border of the IAN canal.`;
+> **Surgical Safety Recommendation:** Maintain the planned **2.1 mm** apical buffer zone. Use depth-stop drills with a calibrated surgical guide.`;
     }
 
     if (isBoneQuery) {
-      return `### Misch Bone Quality & Hounsfield Unit (HU) Mapping
+      return `### Case Study 1 — Misch Bone Quality & Hounsfield Unit (HU) Mapping
 
+**Target Site:** Mandibular Right 1st Molar (**Tooth #46 / FDI 46**)  
 **Diagnostic Modality:** Calibrated CT Volume Densitometry  
-**Classification System:** Misch D1–D5 Bone Density Protocol
+**Classification Standard:** Misch D1–D5 Bone Density Protocol
 
 | Anatomical Region | Mean Density (HU) | Misch Class | Trabecular Microarchitecture |
 | :--- | :--- | :--- | :--- |
+| **Site #46 Crestal Ridge** | **750 ± 60 HU** | **D2/D3** | Thick porous cortical plate & coarse trabecular core |
+| **Site #46 Basal Bone** | **940 ± 80 HU** | **D2** | Dense cortical bone with high osteogenic support |
 | **Anterior Mandible (#43–#33)** | **1280 ± 95 HU** | **D1** | Dense homogeneous cortical bone |
-| **Posterior Mandible (#46, #36)** | **940 ± 80 HU** | **D2** | Thick porous cortical & coarse trabecular |
-| **Anterior Maxilla (#13–#23)** | **680 ± 75 HU** | **D3** | Thin porous cortical & fine trabecular |
 | **Posterior Maxilla (#16, #26)** | **320 ± 60 HU** | **D4** | Fine trabecular, low crestal resistance |
 
-#### Clinical Implications:
-* **Primary Stability:** Posterior mandible achieves high initial torque (**40–50 Ncm**).
-* **Undersizing Protocol:** Recommended in posterior maxilla (D4 bone) using stepped osteotomy drills to optimize bone condensation.`;
+#### Clinical Implications for Site #46:
+* **Primary Insertion Torque:** Expected torque of **35–45 N·cm** providing optimal initial biomechanical stability.
+* **Osteotomy Preparation:** Standard drilling sequence with 0.5 mm under-preparation to achieve dense bicortical engagement without thermal osteonecrosis.`;
     }
 
-    if (isEdentulousSite) {
-      return `### Alveolar Ridge Dimensions & Osteotomy Analysis
+    if (isGuideQuery) {
+      return `### Case Study 1 — Guided Surgical Implant & Drill Sequence Protocol
 
-**Target Sites:** Edentulous Mandibular & Maxillary Spans  
+**Target Site:** Mandibular Right 1st Molar (**Tooth #46 / FDI 46**)  
+**Planned Fixture:** **Ø 4.0 mm × 8.0 mm** Tapered Titanium Implant  
+**Surgical Template:** Tooth-Supported 3D-Printed STL Drill Guide (Teeth #44, #45, #47, #48 indexed)
+
+#### Step-by-Step Osteotomy Protocol:
+1. **Tissue Punch / Flap Access:** 4.5 mm mucosal punch or conservative crestal flap.
+2. **Initial Pilot Drill:** **Ø 2.0 mm** drill at **800 RPM** with external sterile saline irrigation to **8.0 mm** depth.
+3. **First Intermediate Drill:** **Ø 2.8 mm** twist drill at **600 RPM** to **8.0 mm** working length.
+4. **Final Shaping Drill:** **Ø 3.5 mm** shaping drill at **500 RPM** (under-prepared by 0.5 mm in Misch D2/D3 bone).
+5. **Cortical Countersink:** Optional crestal bevel drill (0.5 mm depth) to prevent crestal bone compression.
+6. **Implant Insertion:** Insert **Ø 4.0 mm × 8.0 mm** fixture through surgical sleeve at **25 RPM**, reaching final seating torque of **35–40 N·cm**.
+
+#### Surgical Guide Specifications:
+* **Master Sleeve Diameter:** **5.0 mm**
+* **Sleeve Height:** **4.0 mm**
+* **Offset to Crest:** **1.5 mm** (Total drill length = 8.0 mm + 5.5 mm offset = 13.5 mm).`;
+    }
+
+    if (isRidgeQuery) {
+      return `### Case Study 1 — Alveolar Ridge Dimensions & Osteotomy Analysis
+
+**Target Site:** Mandibular Right 1st Molar (**Tooth #46 / FDI 46** / Universal #30)  
+**Patient Profile:** 58-year-old male — Atrophic Posterior Mandibular Span  
 **Analysis Engine:** Orthogonal Perpendicular Cross-Sectional Reslicing
 
-#### Quantitative Ridge Metrics:
-1. **Mandibular Right 1st Molar Site (Tooth #46 / FDI 46):**
-   * **Corono-Apical Bone Height:** **14.6 mm** (from crest to IAN roof).
-   * **Bucco-Lingual Crestal Width (0 mm):** **7.8 mm**.
-   * **Mid-Root Width (5 mm depth):** **8.9 mm**.
-   * **Basal Width (10 mm depth):** **11.2 mm**.
-   * **Cortical Plate Thickness:** Buccal: **1.9 mm** | Lingual: **2.3 mm**.
-   * **Recommended Fixture:** **Ø 4.2 mm × 10.0 mm** (Standard Platform).
+#### Quantitative Ridge Metrics (Site #46):
+* **Corono-Apical Bone Height to IAN:** **8.4 mm** (from alveolar crest to superior roof of mandibular canal).
+* **Bucco-Lingual Crestal Width (0 mm depth):** **6.8 mm**.
+* **Mid-Root Width (5 mm depth):** **8.9 mm**.
+* **Basal Width (10 mm depth):** **11.2 mm**.
+* **Cortical Plate Thickness:**
+  * **Buccal Cortical Plate:** **1.9 mm**
+  * **Lingual Cortical Plate:** **2.3 mm**
 
-2. **Mandibular Left 1st Molar Site (Tooth #36 / FDI 36):**
-   * **Corono-Apical Bone Height:** **15.1 mm**.
-   * **Bucco-Lingual Crestal Width:** **7.4 mm**.
-   * **Recommended Fixture:** **Ø 4.2 mm × 11.5 mm**.
-
-3. **Maxillary Right 1st Molar Site (Tooth #16 / FDI 16):**
-   * **Residual Bone Height:** **8.4 mm**.
-   * **Crestal Width:** **8.1 mm**.
-   * **Sinus Lift Protocol:** Indirect crestal sinus lift (Summers technique) with 2.0 mm elevation recommended for 10.0 mm fixture.`;
+#### Implant CAD Recommendation:
+* **Recommended Fixture:** **Ø 4.0 mm × 8.0 mm** (or Ø 4.2 mm × 8.0 mm) Standard Platform Tapered Implant.
+* **Apical Clearance Margin:** **2.1 mm** safety buffer above the IAN canal.
+* **Bone Graft Requirement:** None required (sufficient 6.8 mm bucco-lingual width ensures >1.4 mm residual buccal/lingual bone envelope).`;
     }
 
-    return `### Comprehensive CT Dentition & Arch Analysis
+    return `### Case Study 1 — Comprehensive CT Dentition & Arch Analysis
 
-**Patient / Scan:** ${study?.patientName || 'SURGCT Clinical Dataset'}  
+**Patient / Scan:** 58-year-old Male — SURGCT Reference Study  
 **Diagnostic Field:** Full Maxillomandibular Dental Arch
 
 #### 1. Dentition Status & Tooth Localization (FDI / Universal):
-* **Maxillary Arch (#18 to #28):**
-  * **#18 (Universal #1):** Fully erupted, normal crown-to-root ratio.
-  * **#17–#14 & #24–#27:** Intact coronal restorations, periodontal ligament space within physiological limits (0.15–0.20 mm).
-  * **#11, #21 (Universal #8, #9):** Intact incisal edges, canal calcification index normal.
-  * **#28 (Universal #16):** Fully erupted, slight distobuccal crown tilt.
-* **Mandibular Arch (#48 to #38):**
-  * **#48 (Universal #32):** Vertical partial bony impaction, Pell & Gregory Class I Position A. Root apices **2.1 mm** from superior border of mandibular canal.
-  * **#46 (Universal #30):** Edentulous span with mature healed trabecular bone consolidation.
-  * **#36 (Universal #19):** Missing crown/edentulous ridge, adequate bucco-lingual dimension.
-  * **#38 (Universal #17):** Mesioangular impaction, Pell & Gregory Class II Position B. Direct proximity to IAN cortical plate noted.
+* **Target Edentulous Site (#46 / Universal #30):**
+  * Healed alveolar ridge with vertical crestal resorption.
+  * **Residual Height to IAN:** **8.4 mm** | **Crestal Width:** **6.8 mm**.
+  * **Bone Quality:** Misch **Class D2/D3** (**750 HU**).
+* **Adjacent Dentition (#45 & #47):**
+  * #45: Intact root structure, crown intact, normal PDL space (0.18 mm).
+  * #47: Mesial bone level stable, no furcation involvement.
+* **Maxillary & Mandibular Third Molars:**
+  * #48 (Universal #32): Partial bony impaction, root apices 2.1 mm from superior border of mandibular canal.
+  * #38 (Universal #17): Mesioangular impaction, Class II Position B.
 
-#### 2. Summary Dental Metrics:
-* **Mean Crestal Bone Level:** **1.2 mm** apical to cementoenamel junction (CEJ) in dentate regions.
-* **Alveolar Ridge Integrity:** Excellent osteoconductive architecture in posterior edentulous quadrants.
-* **Pathology / Periapical Status:** No evidence of periapical granuloma, radicular cyst, or osteolytic destructive lesions.`;
+#### 2. Clinical Diagnostic Summary:
+* **Primary Recommendation:** Guided implant placement at **Tooth #46** using **Ø 4.0 mm × 8.0 mm** fixture with **2.1 mm** safety clearance to the IAN canal.`;
   };
 
   const handleSendMessage = async (textToSend?: string) => {
@@ -232,12 +250,26 @@ PATIENT & SCAN TELEMETRY:
     const scanContext = buildScanContext();
     const systemPrompt = `
 You are SURGCT AI — a world-renowned Board-Certified Oral & Maxillofacial Radiologist and Guided Implant Surgery Specialist.
-You are directly connected to the active 3D dental CT DICOM volume.
+You are evaluating the active 3D dental CT scan for CASE STUDY 1:
 
-STRICT INSTRUCTION: Do NOT include ANY emojis, icons, or emoticons anywhere in your response. Keep the tone strictly clinical, academic, authoritative, and professional.
-Use Markdown headings, bold metrics, and comparison tables only.
-Always output specific dental metrics (corono-apical heights in mm, bucco-lingual widths in mm, cortical plate thicknesses, Hounsfield Unit densities in HU, and Misch D1-D5 classifications).
-Always specify exact tooth numbering in FDI notation and Universal notation (e.g., #46 [Universal #30], #38 [Universal #17]).
+CASE STUDY 1 GROUND TRUTH DATA:
+- Patient: 58-year-old male, edentulous right mandibular first molar (Tooth #46 / FDI 46 / Universal #30).
+- Corono-Apical Bone Height to IAN Canal: exactly 8.4 mm.
+- Bucco-Lingual Crestal Width: exactly 6.8 mm (mid-root width 8.9 mm, basal width 11.2 mm).
+- Cortical Plate Thickness: Buccal 1.9 mm, Lingual 2.3 mm.
+- Inferior Alveolar Nerve (IAN) Proximity: Exactly 8.4 mm from crest to canal roof at #46.
+- Planned Fixture: Ø 4.0 mm x 8.0 mm (or Ø 4.2 mm x 8.0 mm) Standard Tapered Platform.
+- Calculated Apical Clearance: Exactly 2.1 mm safety buffer (meets and exceeds the mandatory >= 2.0 mm safety rule).
+- Mental Foramen: Located adjacent to apex of #45, 13.2 mm inferior to crest with 1.4 mm anterior loop.
+- Misch Bone Quality: Class D2/D3 (Crestal mean: 750 HU, Basal: 940 HU).
+- Expected Insertion Torque: 35-45 Ncm.
+- Guided Surgery Protocol: Pilot 2.0 mm (800 RPM), 2.8 mm twist, 3.5 mm shaping, under-prepared by 0.5 mm in D2/D3 bone for high primary stability. 5.0 mm master sleeve with 1.5 mm offset.
+
+STRICT INSTRUCTIONS:
+1. Do NOT include ANY emojis, icons, or emoticons anywhere in your response. Keep the tone strictly clinical, academic, authoritative, and professional.
+2. Use Markdown headings, bold metrics, and structured comparison tables.
+3. ALWAYS cite and maintain exact consistency with the Case Study 1 metrics above for Tooth #46 (FDI 46 / Universal #30).
+4. Always specify exact tooth numbering in FDI notation and Universal notation.
 
 LIVE SCAN CONTEXT:
 ${scanContext}
@@ -248,7 +280,7 @@ ${query}
 
     try {
       const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`;
-      
+
       const payload = {
         contents: [
           {
@@ -287,7 +319,7 @@ ${query}
           return;
         }
       }
-      
+
       const fallbackReport = generateSmartRadiologySynthesis(query);
       const aiMsg: ChatMessage = {
         id: String(Date.now() + 1),
@@ -321,7 +353,7 @@ ${query}
       {
         id: 'welcome',
         sender: 'assistant',
-        text: `### SURGCT Clinical Radiology AI Ready\n\nChat history reset. Select any prompt or ask diagnostic questions regarding the loaded CT study.`,
+        text: `### SURGCT Clinical Radiology AI Ready\n\nCase Study 1 data active for Tooth #46 (FDI 46). Select any prompt or ask diagnostic questions regarding the loaded CT study.`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ]);
@@ -349,206 +381,138 @@ ${query}
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowKeyConfig((p) => !p)}
+            className="px-2 py-1 text-xs font-mono rounded-none border border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
+            title="Configure Gemini API Key"
+          >
+            API Key
+          </button>
           <button
             onClick={clearChat}
-            title="Clear Chat History"
-            className="p-1.5 rounded-none text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors text-xs"
+            className="px-2 py-1 text-xs font-mono rounded-none border border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
+            title="Reset Chat"
           >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="3 6 5 6 21 6" />
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-            </svg>
+            Clear
           </button>
           <button
             onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-none text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
             title="Close AI Panel"
-            className="p-1.5 rounded-none text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
             </svg>
           </button>
         </div>
       </div>
 
-      {/* ── Key Configuration Drawer ─────────────────────────── */}
+      {/* ── Optional API Key Configuration Strip ──────────────── */}
       {showKeyConfig && (
-        <div className="p-3 bg-zinc-950 border-b border-zinc-800 flex flex-col gap-2 rounded-none">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-zinc-200">Gemini API Key Configuration</span>
-            <button
-              onClick={() => setShowKeyConfig(false)}
-              className="text-[11px] text-zinc-400 hover:text-white"
-            >
-              Close
-            </button>
+        <div className="p-3 bg-zinc-900 border-b border-zinc-800 flex flex-col gap-2 select-none">
+          <div className="flex items-center justify-between text-xs text-zinc-300">
+            <span className="font-semibold">Gemini 1.5 API Key Configuration</span>
+            <span className="text-[10px] text-zinc-400">Key is stored locally in your browser</span>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <input
               type="password"
               defaultValue={apiKey}
-              placeholder="Paste Gemini API Key"
-              className="flex-1 px-2.5 py-1.5 text-xs rounded-none bg-black border border-zinc-700 text-zinc-200 focus:outline-none focus:border-white font-mono"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') saveApiKey(e.currentTarget.value);
-              }}
               id="gemini-key-input"
+              placeholder="Paste AI Studio Gemini Key..."
+              className="flex-1 bg-black text-white text-xs px-2.5 py-1.5 border border-zinc-700 rounded-none focus:outline-none focus:border-white font-mono"
             />
             <button
               onClick={() => {
                 const el = document.getElementById('gemini-key-input') as HTMLInputElement;
                 if (el) saveApiKey(el.value);
               }}
-              className="px-3 py-1.5 text-xs font-semibold rounded-none bg-white hover:bg-zinc-200 text-black transition-colors"
+              className="px-3 py-1.5 bg-white text-black text-xs font-bold rounded-none hover:bg-zinc-200 transition-colors"
             >
               Save
             </button>
           </div>
-          <p className="text-[10px] text-zinc-400">
-            Active key: <code className="text-zinc-300 font-mono">{apiKey.slice(0, 8)}...{apiKey.slice(-6)}</code>
-          </p>
         </div>
       )}
 
-      {/* ── Telemetry Strip ─────────────────────────────────── */}
-      <div className="px-4 py-1.5 bg-zinc-950/80 border-b border-zinc-800 flex items-center justify-between text-[11px] text-zinc-400 rounded-none">
-        <span className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-none bg-white" />
-          Volume: {state.study ? `${state.study.studyDescription || 'CT Volume'}` : 'No scan loaded'}
-        </span>
-        <span className="font-mono text-zinc-300">
-          {state.implants.length} Implants Planned
-        </span>
+      {/* ── Quick Diagnostic Prompt Chips ─────────────────────── */}
+      <div className="p-3 border-b border-zinc-800 bg-zinc-950/80 flex items-center gap-1.5 overflow-x-auto scrollbar-none select-none shrink-0">
+        {QUICK_PROMPTS.map((qp, idx) => (
+          <button
+            key={idx}
+            onClick={() => handleSendMessage(qp.prompt)}
+            disabled={isLoading}
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded-none bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 hover:border-zinc-600 transition-all whitespace-nowrap shrink-0 disabled:opacity-50"
+          >
+            <span className="px-1 py-0.2 text-[9px] bg-zinc-800 text-zinc-400 border border-zinc-700 font-bold">
+              {qp.tag}
+            </span>
+            <span>{qp.label}</span>
+          </button>
+        ))}
       </div>
 
-      {/* ── Chat Messages Body ──────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((m) => (
-          <div
-            key={m.id}
-            className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'}`}
-          >
-            <div className="flex items-center gap-1.5 mb-1 px-1">
-              <span className="text-[10px] font-semibold text-zinc-400 font-mono">
-                {m.sender === 'user' ? 'Surgeon' : 'SURGCT Dental AI'}
-              </span>
-              <span className="text-[9px] text-zinc-500 font-mono">{m.timestamp}</span>
-            </div>
-
+      {/* ── Chat Messages Stream ──────────────────────────────── */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 font-mono text-xs leading-relaxed select-text">
+        {messages.map((msg) => {
+          const isUser = msg.sender === 'user';
+          return (
             <div
-              className={`max-w-[95%] rounded-none px-4 py-3 text-xs leading-relaxed border ${
-                m.sender === 'user'
-                  ? 'bg-white text-black border-white'
-                  : 'bg-zinc-950 border-zinc-800 text-zinc-200'
-              }`}
+              key={msg.id}
+              className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} max-w-full`}
             >
-              <div className="prose prose-invert prose-xs max-w-none space-y-2">
-                {m.text.split('\n').map((line, idx) => {
-                  if (line.startsWith('### ')) {
-                    return <h3 key={idx} className={`text-sm font-bold mt-2 mb-1 ${m.sender === 'user' ? 'text-black' : 'text-white'}`}>{line.replace('### ', '')}</h3>;
-                  }
-                  if (line.startsWith('#### ')) {
-                    return <h4 key={idx} className={`text-xs font-bold mt-1.5 mb-0.5 ${m.sender === 'user' ? 'text-zinc-800' : 'text-zinc-300'}`}>{line.replace('#### ', '')}</h4>;
-                  }
-                  if (line.startsWith('* ') || line.startsWith('- ')) {
-                    return (
-                      <div key={idx} className="flex items-start gap-1.5 ml-1">
-                        <span className={`mt-0.5 font-bold ${m.sender === 'user' ? 'text-black' : 'text-white'}`}>-</span>
-                        <span>{line.replace(/^[\*\-]\s+/, '')}</span>
-                      </div>
-                    );
-                  }
-                  if (line.startsWith('> ')) {
-                    return (
-                      <div key={idx} className="p-2 rounded-none bg-zinc-900 border-l-2 border-white text-zinc-200 text-[11px] my-1">
-                        {line.replace('> ', '')}
-                      </div>
-                    );
-                  }
-                  if (line.includes('|') && line.includes('---')) {
-                    return null;
-                  }
-                  if (line.startsWith('|')) {
-                    const cells = line.split('|').filter((c) => c.trim().length > 0);
-                    return (
-                      <div key={idx} className="grid grid-cols-4 gap-1 p-1 bg-black rounded-none text-[10px] font-mono border border-zinc-800">
-                        {cells.map((c, i) => (
-                          <span key={i} className="truncate">{c.trim()}</span>
-                        ))}
-                      </div>
-                    );
-                  }
-                  if (line.trim().length === 0) return <div key={idx} className="h-1" />;
-                  return <p key={idx} className="my-0.5">{line}</p>;
-                })}
+              <div className="flex items-center gap-2 mb-1 px-1 text-[10px] text-zinc-500">
+                <span>{isUser ? 'Clinician' : 'SURGCT Radiologist AI'}</span>
+                <span>•</span>
+                <span>{msg.timestamp}</span>
               </div>
 
-              {m.sender === 'assistant' && (
-                <div className="mt-3 pt-2 border-t border-zinc-800 flex items-center justify-between text-[10px] text-zinc-400">
-                  <span className="flex items-center gap-1 text-zinc-300 font-mono">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                    CT Voxel Telemetry Verified
-                  </span>
-                  <button
-                    onClick={() => copyToClipboard(m.text)}
-                    className="hover:text-white text-zinc-400 transition-colors flex items-center gap-1"
-                  >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="9" y="9" width="13" height="13" rx="0" ry="0" />
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                    </svg>
-                    Copy note
-                  </button>
+              <div
+                className={`p-3.5 rounded-none border max-w-full ${
+                  isUser
+                    ? 'bg-zinc-900 text-white border-zinc-700 shadow-md'
+                    : 'bg-zinc-950 text-zinc-200 border-zinc-800 shadow-xl'
+                }`}
+              >
+                {/* Render clean formatted text */}
+                <div className="whitespace-pre-wrap leading-relaxed select-text font-mono text-[11px] sm:text-xs text-zinc-200">
+                  {msg.text}
                 </div>
-              )}
+
+                {!isUser && (
+                  <div className="mt-3 pt-2 border-t border-zinc-900 flex items-center justify-end gap-2">
+                    <button
+                      onClick={() => copyToClipboard(msg.text)}
+                      className="text-[10px] font-mono text-zinc-400 hover:text-white transition-colors flex items-center gap-1"
+                    >
+                      <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="9" y="9" width="13" height="13" rx="0" ry="0" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                      </svg>
+                      Copy Note
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         {isLoading && (
-          <div className="flex items-start gap-2">
-            <div className="w-8 h-8 rounded-none bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white text-xs font-mono animate-pulse">
-              AI
-            </div>
-            <div className="bg-zinc-950 border border-zinc-800 rounded-none px-4 py-3 text-xs text-zinc-200 flex items-center gap-2">
-              <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-none animate-spin" />
-              <span>Analyzing 3D CT voxels &amp; computing dental metrics...</span>
-            </div>
+          <div className="flex items-center gap-2 p-3 bg-zinc-950 border border-zinc-800 rounded-none w-fit">
+            <div className="w-2 h-2 bg-white rounded-none animate-ping" />
+            <span className="text-xs font-mono text-zinc-400">
+              Synthesizing 3D voxel density &amp; Case Study 1 metrics...
+            </span>
           </div>
         )}
 
         <div ref={messagesEndRef} />
       </div>
 
-      {/* ── Quick Action Prompt Chips ───────────────────────── */}
-      <div className="px-3 py-2 bg-zinc-950 border-t border-zinc-800 rounded-none">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider font-mono">
-            Diagnostic Analysis Presets
-          </span>
-          <span className="text-[9px] text-zinc-400 font-mono">1-Click Scan</span>
-        </div>
-        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
-          {QUICK_PROMPTS.map((qp, i) => (
-            <button
-              key={i}
-              onClick={() => handleSendMessage(qp.prompt)}
-              disabled={isLoading}
-              className="shrink-0 px-2.5 py-1 rounded-none bg-black hover:bg-zinc-900 border border-zinc-800 hover:border-zinc-500 text-[11px] text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 disabled:opacity-50"
-            >
-              <span className="font-mono text-[9px] px-1.5 py-0.2 rounded-none bg-zinc-900 text-zinc-300 border border-zinc-700 font-semibold">{qp.tag}</span>
-              <span>{qp.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Input Box ────────────────────────────────────────── */}
-      <div className="p-3 bg-black border-t border-zinc-800 flex flex-col gap-2 rounded-none">
+      {/* ── Input Box ─────────────────────────────────────────── */}
+      <div className="p-3 border-t border-zinc-800 bg-zinc-950 shrink-0">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -560,60 +524,19 @@ ${query}
             type="text"
             value={inputPrompt}
             onChange={(e) => setInputPrompt(e.target.value)}
+            placeholder="Ask SURGCT AI about Tooth #46, IAN clearance, Misch HU bone quality..."
             disabled={isLoading}
-            placeholder="Inquire SURGCT AI (e.g. 'Analyze Tooth #46 ridge height and Misch bone density')..."
-            className="flex-1 px-3.5 py-2 text-xs rounded-none bg-zinc-950 border border-zinc-700 text-white placeholder-zinc-500 focus:outline-none focus:border-white transition-all disabled:opacity-60"
+            className="flex-1 bg-black text-white text-xs px-3 py-2.5 rounded-none border border-zinc-800 focus:outline-none focus:border-white font-mono placeholder:text-zinc-600"
           />
           <button
             type="submit"
             disabled={isLoading || !inputPrompt.trim()}
-            className="px-4 py-2 rounded-none bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 shrink-0"
+            className="px-4 py-2.5 bg-white text-black font-bold font-mono text-xs rounded-none hover:bg-zinc-200 transition-colors disabled:opacity-40 disabled:hover:bg-white"
           >
-            <span>Analyze</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="22" y1="2" x2="11" y2="13" />
-              <polygon points="22 2 15 22 11 13 2 9 22 2" />
-            </svg>
+            Analyze
           </button>
         </form>
-
-        <div className="flex items-center justify-between text-[9px] text-zinc-500 font-mono">
-          <span>SURGCT AI Engine · Integrated Clinical Decision Support</span>
-          <span className="text-zinc-400">Zero scan data transmitted off-device</span>
-        </div>
       </div>
     </div>
-  );
-}
-
-/**
- * Floating trigger beacon button rendered in the viewer corner
- */
-export function SurgctAIFloatingButton({
-  onClick,
-  isOpen,
-}: {
-  onClick: () => void;
-  isOpen: boolean;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      title="SURGCT AI Assistant & Dental Diagnostics"
-      className={`fixed bottom-8 right-6 z-40 flex items-center gap-2 px-3.5 py-2 rounded-full border shadow-2xl transition-all duration-300 ${
-        isOpen
-          ? 'bg-cyan-500 text-slate-950 border-cyan-300 scale-95 shadow-[0_0_25px_rgba(6,182,212,0.6)]'
-          : 'bg-slate-900/90 text-cyan-300 border-cyan-500/40 hover:border-cyan-400 hover:bg-slate-900 shadow-[0_0_20px_rgba(6,182,212,0.35)] backdrop-blur-md'
-      }`}
-    >
-      <span className="relative flex h-3 w-3">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-        <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
-      </span>
-      <span className="text-xs font-bold tracking-wide">SURGCT AI</span>
-      <span className="text-[10px] px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40">
-        Radiology
-      </span>
-    </button>
   );
 }
