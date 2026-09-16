@@ -1,6 +1,71 @@
 SURGCT
 
-Zero-install, 100% in-browser Surgical CT Diagnostic & AI Implant Analytics Suite
+ System Overview
+
+SURGCT is a zero-install, browser-based surgical CT diagnostic and
+planning platform that transforms patient-specific DICOM studies into
+interactive 2D/3D anatomy, panoramic views, implant plans, safety
+analysis, and AI-assisted clinical insights.
+
+flowchart LR
+    A[" Patient CT / DICOM"] --> B["Cornerstone3D<br/>Load + Decode"]
+    B --> C["3D Voxel / Scalar Volume<br/>Hounsfield Units (HU)"]
+    C --> D["GPU Texture"]
+    D --> E["WebGL / WebGL2"]
+    E --> F["vtk.js<br/>Volume Raymarching"]
+
+    C --> G["MPR<br/>Axial • Sagittal • Coronal"]
+    C --> H["CPR / Panoramic<br/>Cubic B-Spline"]
+
+    F --> I["Interactive 3D Anatomy"]
+    G --> J["Precise 2D Analysis"]
+    H --> K["Curved Anatomical View"]
+
+    I --> L["Surgical Planning"]
+    J --> L
+    K --> L
+
+    L --> M["Implant Planning"]
+    L --> N["Nerve Tracing"]
+    L --> O["Safety Clearance"]
+    L --> P["AI-Assisted Analysis"]
+
+ End-to-End Workflow
+
+DICOM CT
+   │
+   ▼
+┌──────────────────────┐
+│ Cornerstone3D        │
+│ Load + Decode        │
+└──────────┬───────────┘
+           ▼
+┌──────────────────────┐
+│ 3D Voxel Volume      │
+│ HU / Scalar Data     │
+└──────────┬───────────┘
+           │
+     ┌─────┼──────────────┐
+     ▼     ▼              ▼
+    MPR    CPR           3D
+     │     │              │
+     ▼     ▼              ▼
+  2D Slice Panoramic   vtk.js + WebGL
+     │     │              │
+     └─────┼──────────────┘
+           ▼
+┌─────────────────────────────┐
+│ Anatomical + Surgical       │
+│ Analysis                    │
+└─────────────┬───────────────┘
+              ▼
+┌─────────────────────────────┐
+│ Implant • Nerve • Safety    │
+│ AI-Assisted Planning        │
+└─────────────────────────────┘
+
+Zero-install · 100% in-browser · Surgical CT Diagnostics · AI
+Implant Analytics
 
 SURGCT is a browser-based surgical planning platform that converts
 patient-specific CT/DICOM data into interactive 2D and 3D anatomical
@@ -112,7 +177,7 @@ System Architecture
                                    │ Interactive 3D CT  │
                                    └────────────────────┘
 
-CT Data Pipeline
+ CT Data Pipeline
 
 SURGCT treats the CT volume as volumetric data rather than first
 converting the scan into a conventional polygon mesh.
@@ -168,7 +233,7 @@ Screen pixel
 This is volumetric raymarching rather than conventional
 polygon-based rendering.
 
-GPU Volume Rendering
+ GPU Volume Rendering
 
 For each screen pixel, a ray is conceptually traced through the CT
 volume. The GPU samples the volume along that ray and accumulates the
@@ -200,7 +265,24 @@ Inverted
 This allows the same volumetric CT data to be visualized with different
 density-to-color/opacity mappings.
 
-2D Multi-Planar Reconstruction (MPR)
+ Rendering Pipeline
+
+flowchart TD
+    A["3D CT Voxels"] --> B["GPU Texture"]
+    B --> C["WebGL / WebGL2 Shader"]
+    C --> D["Ray Entry"]
+    D --> E["Sample Along Ray"]
+    E --> F["Read HU / Density"]
+    F --> G["Transfer Function"]
+    G --> H["Color + Opacity"]
+    H --> I["Front-to-Back Accumulation"]
+    I --> J["Final Screen Pixel"]
+
+Key idea: SURGCT renders the CT as a volume. It does not need to
+convert the complete scan into thousands of polygons before
+visualization.
+
+ 2D Multi-Planar Reconstruction (MPR)
 
 A CT scan is fundamentally a stack of 2D slices. SURGCT reconstructs and
 displays the volume in three standard anatomical orientations:
@@ -229,7 +311,24 @@ Distance between structures
 
 SURGCT implements MPR using Cornerstone3D + custom mathematics.
 
-Panoramic View / Curved Planar Reformation
+📐 MPR Reconstruction
+
+                  3D Voxel Volume
+                         │
+             ┌───────────┼───────────┐
+             │           │           │
+             ▼           ▼           ▼
+          AXIAL       SAGITTAL    CORONAL
+        top → bottom  left → right front → back
+             │           │           │
+             └───────────┼───────────┘
+                         ▼
+                  Linked 2D Views
+                         │
+                         ▼
+              Precise Measurements
+
+ Panoramic View / Curved Planar Reformation
 
 A standard CT slice is not always ideal for curved anatomical
 structures.
@@ -257,7 +356,17 @@ curve to generate an unwrapped 2D representation.
 The concept can also be generalized to other curved anatomical
 structures.
 
-Implant Planning
+ CPR / Panoramic Reconstruction
+
+flowchart LR
+    A["User Control Points"] --> B["Cubic B-Spline"]
+    B --> C["Curved Anatomical Path"]
+    C --> D["Sample CT Volume"]
+    D --> E["Resample Along Curve"]
+    E --> F["Unwrap to 2D"]
+    F --> G["Panoramic View"]
+
+🦴 Implant Planning
 
 SURGCT provides a virtual implant-planning workflow in which clinicians
 can:
@@ -275,7 +384,7 @@ Receive safety-clearance warnings before surgery.
 This allows the planned procedure to be evaluated against
 patient-specific anatomy before intervention.
 
-Nerve Tracing & Safety Analysis
+ Nerve Tracing & Safety Analysis
 
 Critical nerves can be traced in the CT and panoramic views.
 
@@ -300,7 +409,28 @@ CT Volume
 The case study in the presentation focuses on the Inferior Alveolar
 Nerve (IAN) and posterior mandibular implant planning.
 
-AI-Assisted Diagnostics
+ Planning Safety Flow
+
+CT Volume
+   │
+   ├──────────────► Critical Nerve Trace
+   │                         │
+   │                         ▼
+   │                  3D Nerve Geometry
+   │
+   └──────────────► Implant Trajectory
+                             │
+                             ▼
+                      3D Distance Check
+                             │
+                    ┌────────┴────────┐
+                    ▼                 ▼
+             Safe Clearance      Unsafe Proximity
+                                      │
+                                      ▼
+                              Real-Time Warning
+
+ AI-Assisted Diagnostics
 
 SURGCT includes an AI-assisted diagnostic layer that analyzes CT and
 surgical-planning information to provide structured clinical insights.
@@ -330,7 +460,24 @@ Available planning information
 The AI functions are intended as decision-support capabilities within
 the planning workflow.
 
-Privacy-First Data Architecture
+ AI Analysis Flow
+
+flowchart TD
+    A["CT / Planning Data"] --> B["Anatomical Analysis"]
+    B --> C["Tooth Localization"]
+    B --> D["Bone Quality"]
+    B --> E["Ridge Height / Width"]
+    B --> F["Cortical Width"]
+
+    C --> G["Structured Clinical Insights"]
+    D --> G
+    E --> G
+    F --> G
+
+    G --> H["Implant Planning Support"]
+    H --> I["Surgical / Drill Protocol Guidance"]
+
+ Privacy-First Data Architecture
 
 SURGCT is designed so that sensitive CT imaging can remain on the
 patient's device.
@@ -370,7 +517,7 @@ The processed volume is converted into GPU-ready texture data.
 
 Raw CT pixel data does not need to be uploaded to a central server.
 
-Performance Architecture
+ Performance Architecture
 
 SURGCT uses browser-native technologies to keep volumetric processing
 and visualization responsive.
@@ -394,7 +541,7 @@ vtk.js
 vtk.js provides the 3D visualization and volumetric rendering
 foundation.
 
-Technology Stack
+🛠️ Technology Stack
 
 Layer                   Technology
 
@@ -432,7 +579,7 @@ View control
 This allows the clinician to inspect the rendered anatomy from different
 spatial perspectives.
 
-Example Clinical Case
+ Example Clinical Case
 
 High-Risk Posterior Mandibular Implant --- IAN Proximity
 
@@ -455,7 +602,7 @@ The case illustrates how CT measurements, nerve proximity, implant
 trajectory, and safety clearance can be evaluated together inside the
 SURGCT workflow.
 
-Business Model
+ Business Model
 
 The presentation proposes a hybrid SaaS and per-procedure model:
 
@@ -477,7 +624,7 @@ Privacy-first client-side CT processing
 
 Scalability across multiple surgical specialties
 
-Workflow at a Glance
+ Workflow at a Glance
 
                     PATIENT CT / DICOM
                            │
@@ -516,7 +663,7 @@ Workflow at a Glance
                            ▼
                  Surgical Planning Output
 
-Key Differentiators
+ Key Differentiators
 
 Zero-Install
 
@@ -549,7 +696,7 @@ AI-Assisted Workflow
 AI capabilities are integrated with anatomical and surgical planning
 information rather than being presented as an isolated chatbot.
 
-Project Status
+ Project Status
 
 SURGCT is presented as a Vmedithon 2026 healthcare solution
 concept/prototype demonstrating a browser-based surgical CT diagnostic
@@ -559,7 +706,7 @@ The presentation focuses on the architecture, visualization pipeline,
 clinical workflow, AI-assisted analysis, implant planning, and proposed
 business model.
 
-Disclaimer
+ Disclaimer
 
 SURGCT is presented as a surgical planning and clinical decision-support
 concept. Outputs such as measurements, safety warnings, AI-generated
@@ -567,7 +714,7 @@ insights, and planning recommendations should be treated as assistive
 information and require appropriate clinical validation and professional
 judgment before use in patient care.
 
-Team
+ Team
 
 TVK
 
