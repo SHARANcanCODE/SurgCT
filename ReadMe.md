@@ -1,6 +1,6 @@
 # SURGCT
 
-## 🏥 System Overview
+##  System Overview
 
 > **SURGCT** is a zero-install, browser-based surgical CT diagnostic and
 > planning platform that transforms patient-specific DICOM studies into
@@ -9,7 +9,7 @@
 
 ``` mermaid
 flowchart LR
-    A["🩻 Patient CT / DICOM"] --> B["Cornerstone3D<br/>Load + Decode"]
+    A[" Patient CT / DICOM"] --> B["Cornerstone3D<br/>Load + Decode"]
     B --> C["3D Voxel / Scalar Volume<br/>Hounsfield Units (HU)"]
     C --> D["GPU Texture"]
     D --> E["WebGL / WebGL2"]
@@ -32,7 +32,7 @@ flowchart LR
     L --> P["AI-Assisted Analysis"]
 ```
 
-### 🔄 End-to-End Workflow
+###  End-to-End Workflow
 
 ``` text
 DICOM CT
@@ -180,7 +180,7 @@ browser-based application.
 
 ------------------------------------------------------------------------
 
-## 🩻 CT Data Pipeline
+##  CT Data Pipeline
 
 SURGCT treats the CT volume as volumetric data rather than first
 converting the scan into a conventional polygon mesh.
@@ -237,7 +237,7 @@ polygon-based rendering.
 
 ------------------------------------------------------------------------
 
-## 🎮 GPU Volume Rendering
+##  GPU Volume Rendering
 
 For each screen pixel, a ray is conceptually traced through the CT
 volume. The GPU samples the volume along that ray and accumulates the
@@ -266,7 +266,7 @@ density-to-color/opacity mappings.
 
 ------------------------------------------------------------------------
 
-### 🎮 Rendering Pipeline
+###  Rendering Pipeline
 
 ``` mermaid
 flowchart TD
@@ -285,7 +285,7 @@ flowchart TD
 convert the complete scan into thousands of polygons before
 visualization.
 
-## 📐 2D Multi-Planar Reconstruction (MPR)
+##  2D Multi-Planar Reconstruction (MPR)
 
 A CT scan is fundamentally a stack of 2D slices. SURGCT reconstructs and
 displays the volume in three standard anatomical orientations:
@@ -313,7 +313,7 @@ SURGCT implements MPR using **Cornerstone3D + custom mathematics**.
 
 ------------------------------------------------------------------------
 
-### 📐 MPR Reconstruction
+###  MPR Reconstruction
 
 ``` text
                   3D Voxel Volume
@@ -364,7 +364,7 @@ structures.
 
 ------------------------------------------------------------------------
 
-### 🌀 CPR / Panoramic Reconstruction
+###  CPR / Panoramic Reconstruction
 
 ``` mermaid
 flowchart LR
@@ -376,7 +376,7 @@ flowchart LR
     F --> G["Panoramic View"]
 ```
 
-## 🦴 Implant Planning
+##  Implant Planning
 
 SURGCT provides a virtual implant-planning workflow in which clinicians
 can:
@@ -392,7 +392,7 @@ patient-specific anatomy before intervention.
 
 ------------------------------------------------------------------------
 
-## 🧠 Nerve Tracing & Safety Analysis
+##  Nerve Tracing & Safety Analysis
 
 Critical nerves can be traced in the CT and panoramic views.
 
@@ -421,7 +421,7 @@ Nerve (IAN)** and posterior mandibular implant planning.
 
 ------------------------------------------------------------------------
 
-### 🛡️ Planning Safety Flow
+###  Planning Safety Flow
 
 ``` text
 CT Volume
@@ -444,7 +444,7 @@ CT Volume
                               Real-Time Warning
 ```
 
-## 🤖 AI-Assisted Diagnostics
+##  AI-Assisted Diagnostics
 
 SURGCT includes an AI-assisted diagnostic layer that analyzes CT and
 surgical-planning information to provide structured clinical insights.
@@ -471,7 +471,7 @@ the planning workflow.
 
 ------------------------------------------------------------------------
 
-### 🤖 AI Analysis Flow
+###  AI Analysis Flow
 
 ``` mermaid
 flowchart TD
@@ -490,7 +490,7 @@ flowchart TD
     H --> I["Surgical / Drill Protocol Guidance"]
 ```
 
-## 🔒 Privacy-First Data Architecture
+##  Privacy-First Data Architecture
 
 SURGCT is designed so that sensitive CT imaging can remain on the
 patient's device.
@@ -529,7 +529,7 @@ The presentation describes the following privacy architecture:
 
 ------------------------------------------------------------------------
 
-## ⚡ Performance Architecture
+##  Performance Architecture
 
 SURGCT uses browser-native technologies to keep volumetric processing
 and visualization responsive.
@@ -555,7 +555,7 @@ foundation.
 
 ------------------------------------------------------------------------
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
   Layer                   Technology
   ----------------------- -------------------------------------
@@ -573,7 +573,7 @@ foundation.
 
 ------------------------------------------------------------------------
 
-## 🧭 3D Interaction
+##  3D Interaction
 
 The 3D viewport uses the **VTK Active Camera** for interactive spatial
 control.
@@ -592,7 +592,7 @@ spatial perspectives.
 
 ------------------------------------------------------------------------
 
-## 🧪 Example Clinical Case
+##  Example Clinical Case
 
 ### High-Risk Posterior Mandibular Implant --- IAN Proximity
 
@@ -612,7 +612,7 @@ SURGCT workflow.
 
 ------------------------------------------------------------------------
 
-## 💼 Business Model
+##  Business Model
 
 The presentation proposes a hybrid SaaS and per-procedure model:
 
@@ -632,7 +632,7 @@ The proposed value proposition is based on:
 
 ------------------------------------------------------------------------
 
-## 🔁 Workflow at a Glance
+##  Workflow at a Glance
 
 ``` text
                     PATIENT CT / DICOM
@@ -675,7 +675,7 @@ The proposed value proposition is based on:
 
 ------------------------------------------------------------------------
 
-## ✨ Key Differentiators
+##  Key Differentiators
 
 ### Zero-Install
 
@@ -710,7 +710,7 @@ information rather than being presented as an isolated chatbot.
 
 ------------------------------------------------------------------------
 
-## 📌 Project Status
+##  Project Status
 
 SURGCT is presented as a **Vmedithon 2026 healthcare solution
 concept/prototype** demonstrating a browser-based surgical CT diagnostic
@@ -722,7 +722,7 @@ business model.
 
 ------------------------------------------------------------------------
 
-## ⚠️ Disclaimer
+##  Disclaimer
 
 SURGCT is presented as a surgical planning and clinical decision-support
 concept. Outputs such as measurements, safety warnings, AI-generated
@@ -732,7 +732,7 @@ judgment before use in patient care.
 
 ------------------------------------------------------------------------
 
-## 👥 Team
+##  Team
 
 **TVK**
 
